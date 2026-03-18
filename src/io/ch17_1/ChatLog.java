@@ -13,6 +13,7 @@ public class ChatLog {
         System.out.println("1. 대화 저장");
         System.out.println("2. 전체 로그 보기");
         System.out.println("3. 단어검색");
+        System.out.println("4. 유저 채팅 기록");
         System.out.print("선택 : ");
         String choice = sc.nextLine();
 
@@ -24,12 +25,38 @@ public class ChatLog {
             System.out.print("검색할 단어 : ");
             String keyword = sc.nextLine();
             searchChat(keyword);
+        } else if (choice.equals("4")) {
+            System.out.print("검색할 이름 : ");
+            String name = sc.nextLine();
+            searchByName(name);
         }
 
         sc.close();
 
 
     } // end of main
+
+    private static void searchByName(String name) {
+        System.out.println("\n===" + name + "님의 대화 ===");
+        try (BufferedReader br = new BufferedReader(new FileReader("chat_log.txt"))) {
+            String line;
+            int count = 0;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith(name + ">")) {
+                    System.out.println(line);
+                    count++;
+                }
+            }
+            if (count == 0) {
+                System.out.println(name + "님의 대화 로그가 존재하지 않습니다.");
+            } else {
+                System.out.println("\n총 " + count + "개의 대화 내용이 발견되었습다");
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static void searchChat(String keyword) {
         System.out.println("\n===" + keyword + " 검색 결과 ===");
@@ -38,16 +65,16 @@ public class ChatLog {
             int count = 0;
             while ((line = br.readLine()) != null) {
                 // 만약 keyword 단어 포함 되어있다면..
-                if(line.contains(keyword)) {
+                if (line.contains(keyword)) {
                     System.out.println(line);
                     count++;
                 }
             }
 
-            if(count == 0) {
+            if (count == 0) {
                 System.out.println(keyword + " 가 포함된 대화가 없습니다.");
             } else {
-                System.out.println("\n총" + count + "개의 대화 내용이 발견되었습다");
+                System.out.println("\n총 " + count + "개의 대화 내용이 발견되었습다");
             }
 
 
