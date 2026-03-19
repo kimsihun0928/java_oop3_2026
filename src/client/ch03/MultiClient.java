@@ -1,0 +1,79 @@
+package client.ch03;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class MultiClient {
+
+    public static void main(String[] args) {
+
+        try (Socket socket = new Socket("localhost", 5000)) {
+
+            // 소켓에서 연결할 입력, 출력 스트림 2개가 필요하다.
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // 클라이언트 입장에서도 키보드에서 값을 입력 받을 스트림이 필요하다.
+            BufferedReader keyboardReader = new BufferedReader(new InputStreamReader(System.in));
+
+            // 읽기 스레드 (서버 측에서 값을 계속 받을 수 있도록 처리)
+            Thread readThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String serverMessage;
+                        while ((serverMessage = reader.readLine()) != null) {
+                            if ("exit".equalsIgnoreCase(serverMessage)) {
+                                System.out.println("서버가 종료했습니다.");
+                                break;
+                            }
+                            System.out.println("서버 : " + serverMessage);
+                        }
+
+                    } catch (IOException e) {
+                        System.out.println("서버 측과 연결이 끊겼습니다.");
+                    }
+                }
+            });
+
+            // 쓰기 스레드 생성 (클라이언트 측 키보드에서 값을 받아서 서버 측으로 전송)
+            Thread writeThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String clientMessage;
+                        while ((clientMessage = keyboardReader.readLine()) != null) {
+                            writer.println(clientMessage);
+                            if ("exit".equalsIgnoreCase(clientMessage)) {
+                                System.out.println("클라이언트가 종료했습니다.");
+                                break;
+                            }
+                        }
+
+                    } catch (IOException e) {
+                        System.out.println("메세지 전송 중 오류가 발생했습니다.");
+                        ;
+                    }
+                }
+            });
+
+
+            readThread.start();
+            writeThread.start();
+
+            readThread.join();
+            writeThread.join();
+
+
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    } // end of main
+} // end of class
