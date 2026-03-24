@@ -97,7 +97,7 @@ public class MemberRepository {
 
 
     public List<Member> findByAgeRange(int min, int max) {
-        List<Member> result = new ArrayList<>();
+        List<Member> result = new ArrayList<>(); // 잠시 보관할곳
         for (Member member : memberList) {
             if (member.getAge() >= min && member.getAge() <= max) {
                 result.add(member);
@@ -107,15 +107,16 @@ public class MemberRepository {
     }
 
     public Member findByEmail(String email) {
-        // 이메일 중복 확인
-        //List<Member> result = new ArrayList<>();
+        // 전체 순회 전 존재 여부부터 확인? --> 반복문 돌기 전에 빠르게 존재 여부만 확인
+        if(emailSet.contains(email)  == false) {
+            return null;
+        }
         for (Member member : memberList) {
-//            if (emailSet.contains(email)) {
                 if (member.getEmail().equalsIgnoreCase(email)) {
                    return member;
                 }
-//            }
         }
+
         return null;
     }
 

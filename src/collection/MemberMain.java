@@ -131,4 +131,3 @@ public class MemberMain {
 
 // List 일땐 isEmpty() 로 확인
 // Member (일반클래스) 일땐 null 로 확인
-// 왜?
