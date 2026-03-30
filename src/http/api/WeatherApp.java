@@ -73,7 +73,6 @@ public class WeatherApp {
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
         }
     }
 
